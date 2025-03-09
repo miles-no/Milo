@@ -11,12 +11,12 @@ Your friendly workspace buddy for Miles on Slack. Milo uses local AI models thro
 
 ## Commands
 
+Just mention @milo followed by your command:
+
 - `@milo help` - Show available commands
 - `@milo list models` - Show available AI models
 - `@milo use model <name>` - Switch to a different model
 - `@milo reset model` - Reset to the default model (llama3.2:1b)
-
-You can also use these commands in channels by prefixing with `milo:` (e.g., `milo: help`)
 
 ## Setup
 

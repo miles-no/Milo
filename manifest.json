@@ -14,9 +14,11 @@
                 "app_mentions:read",
                 "channels:history",
                 "reactions:read",
+                "reactions:write",
                 "chat:write",
                 "im:history",
-                "im:write"
+                "im:write",
+                "im:read"
             ]
         }
     },

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import pkg from '@slack/bolt';
 import { OllamaService } from "./services/ollama.js";
+import { CommandHandler } from "./services/CommandHandler.js";
 const { App } = pkg;
 
 dotenv.config();
@@ -15,6 +16,7 @@ const app = new App({
 });
 
 const ollama = new OllamaService();
+const commandHandler = new CommandHandler(ollama);
 
 // Debug middleware to log all incoming events
 app.use(async ({ logger, context, next }) => {
@@ -35,8 +37,37 @@ app.event('reaction_added', async ({ event, client }) => {
   }
 });
 
+async function handleUserMessage(text: string, userId: string, channelId: string, messageTs: string, client: any) {
+  // Check if it's a command
+  const isCommand = await commandHandler.handleCommand(text, userId, channelId, messageTs, client);
+  if (isCommand) return;
+
+  // Add reaction to original message
+  await client.reactions.add({
+    channel: channelId,
+    timestamp: messageTs,
+    name: 'thinking_face'
+  });
+
+  // Get and send response
+  const response = await ollama.generateResponse(text, userId);
+  await client.chat.postMessage({
+    channel: channelId,
+    thread_ts: messageTs,
+    text: response
+  });
+
+  // Remove reaction
+  await client.reactions.remove({
+    channel: channelId,
+    timestamp: messageTs,
+    name: 'thinking_face'
+  });
+
+}
+
 // Messages that mention Milo
-app.event('app_mention', async ({ event, say }) => {
+app.event('app_mention', async ({ event, client }) => {
   try {
     console.log('📣 App mention event triggered');
     if (event.subtype === 'bot_message') return;
@@ -51,80 +82,22 @@ app.event('app_mention', async ({ event, say }) => {
     // Extract the actual question (remove the bot mention)
     const question = event.text.replace(/<@[^>]+>/g, '').trim().toLowerCase();
 
-    // Handle commands
-    if (question === 'list models') {
-      const models = await ollama.listModels();
-      const currentModel = ollama.getUserModel(event.user || '');
-      await say({
-        text: `Current model: ${currentModel}\n\nAvailable models:\n${models.map(m => `• ${m}`).join('\n')}`,
-        thread_ts: event.ts
-      });
-      return;
+    if (event.user) {
+      await handleUserMessage(question, event.user, event.channel, event.ts, client);
+    } else {
+      throw new Error('User ID is undefined');
     }
-
-    if (question.startsWith('use model ')) {
-      const modelName = question.replace('use model ', '').trim();
-      const models = await ollama.listModels();
-
-      if (!models.includes(modelName)) {
-        await say({
-          text: `❌ Model "${modelName}" not found. Available models:\n${models.map(m => `• ${m}`).join('\n')}`,
-          thread_ts: event.ts
-        });
-        return;
-      }
-
-      if (event.user) {
-        ollama.setUserModel(event.user, modelName);
-      } else {
-        console.error('❌ Error: event.user is undefined');
-      }
-      await say({
-        text: `✅ Switched to model: ${modelName}`,
-        thread_ts: event.ts
-      });
-      return;
-    }
-
-    if (question === 'reset model') {
-      if (event.user) {
-        ollama.resetUserModel(event.user);
-      } else {
-        console.error('❌ Error: event.user is undefined');
-      }
-      await say({
-        text: `✅ Reset to default model: ${ollama.getUserModel(event.user || '')}`,
-        thread_ts: event.ts
-      });
-      return;
-    }
-
-    if (question === 'help' || question === 'commands') {
-      await say({
-        text: `👋 Hello <@${event.user}>! I can:\n` +
-          `• Respond to mentions\n` +
-          `• Watch for reactions\n` +
-          `• Reply in channels when you start with "milo:"\n` +
-          `• \`list models\` - Show available AI models\n` +
-          `• \`use model <name>\` - Switch to a different model\n` +
-          `• \`reset model\` - Reset to the default model`,
-        thread_ts: event.ts
-      });
-      return;
-    }
-
-    // Regular question handling
-    const response = await ollama.generateResponse(question, event.user || '');
-    await say({
-      text: response,
-      thread_ts: event.ts
-    });
   } catch (error) {
     console.error('❌ Error processing app mention:', error);
-    await say({
-      text: "Sorry, I encountered an error while processing your request.",
-      thread_ts: event.ts
-    });
+    try {
+      await client.chat.postMessage({
+        channel: event.channel,
+        thread_ts: event.ts,
+        text: "Sorry, I encountered an error while processing your request."
+      });
+    } catch (replyError) {
+      console.error('Failed to send error message:', replyError);
+    }
   }
 });
 
