@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import pkg from '@slack/bolt';
-import { OllamaService } from './services/ollama';
+import { OllamaService } from "./services/ollama.js";
 const { App } = pkg;
 
 dotenv.config();
@@ -49,11 +49,72 @@ app.event('app_mention', async ({ event, say }) => {
     });
 
     // Extract the actual question (remove the bot mention)
-    const question = event.text.replace(/<@[^>]+>/g, '').trim();
+    const question = event.text.replace(/<@[^>]+>/g, '').trim().toLowerCase();
 
-    // Get response from Ollama
-    const response = await ollama.generateResponse(question);
+    // Handle commands
+    if (question === 'list models') {
+      const models = await ollama.listModels();
+      const currentModel = ollama.getUserModel(event.user || '');
+      await say({
+        text: `Current model: ${currentModel}\n\nAvailable models:\n${models.map(m => `• ${m}`).join('\n')}`,
+        thread_ts: event.ts
+      });
+      return;
+    }
 
+    if (question.startsWith('use model ')) {
+      const modelName = question.replace('use model ', '').trim();
+      const models = await ollama.listModels();
+
+      if (!models.includes(modelName)) {
+        await say({
+          text: `❌ Model "${modelName}" not found. Available models:\n${models.map(m => `• ${m}`).join('\n')}`,
+          thread_ts: event.ts
+        });
+        return;
+      }
+
+      if (event.user) {
+        ollama.setUserModel(event.user, modelName);
+      } else {
+        console.error('❌ Error: event.user is undefined');
+      }
+      await say({
+        text: `✅ Switched to model: ${modelName}`,
+        thread_ts: event.ts
+      });
+      return;
+    }
+
+    if (question === 'reset model') {
+      if (event.user) {
+        ollama.resetUserModel(event.user);
+      } else {
+        console.error('❌ Error: event.user is undefined');
+      }
+      await say({
+        text: `✅ Reset to default model: ${ollama.getUserModel(event.user || '')}`,
+        thread_ts: event.ts
+      });
+      return;
+    }
+
+    if (question === 'help' || question === 'commands') {
+      await say({
+        text: `👋 Hello <@${event.user}>! I can:\n` +
+          `• Respond to mentions\n` +
+          `• Watch for reactions\n` +
+          `• Reply in channels when you start with "milo:"\n` +
+          `• \`list models\` - Show available AI models\n` +
+          `• \`use model <name>\` - Switch to a different model\n` +
+          `• \`reset model\` - Reset to the default model`,
+        thread_ts: event.ts
+      });
+      return;
+    }
+
+    // Regular question handling
+    const response = await ollama.generateResponse(question, event.user || '');
     await say({
       text: response,
       thread_ts: event.ts
@@ -67,45 +128,16 @@ app.event('app_mention', async ({ event, say }) => {
   }
 });
 
-// Channel messages (excluding DMs since we don't have im:* scopes)
-app.message(async ({ message, say }) => {
-  try {
-    if (message.subtype === 'bot_message' || !('text' in message) || !('user' in message)) return;
-
-    const text = message.text ? message.text.toLowerCase().trim() : '';
-
-    console.log('📩 Channel message:', {
-      user: message.user,
-      text: text,
-      channel: message.channel,
-      ts: message.ts
-    });
-
-    // Only respond to specific triggers in channels
-    if (text.includes('hello milo')) {
-      await say({
-        text: `👋 Hello <@${message.user}>!`,
-        thread_ts: message.ts
-      });
-    } else if (text.startsWith('milo:')) {
-      const question = text.replace('milo:', '').trim();
-      const response = await ollama.generateResponse(question);
-      await say({
-        text: response,
-        thread_ts: message.ts
-      });
-    }
-  } catch (error) {
-    console.error('❌ Error processing message:', error);
-  }
-});
-
 (async () => {
   try {
+    // Check Ollama health and model availability
+    const isHealthy = await ollama.checkHealth();
+    if (!isHealthy) {
+      throw new Error('Ollama is not running. Please start Ollama first.');
+    }
+
     await app.start(process.env.PORT || 3000);
-    console.log('⚡️ Bolt app is running!');
-    console.log('Hello, Milo!');
-    console.log('✅ Event listeners registered');
+    console.log('⚡️ Milo is running!');
   } catch (error) {
     console.error('❌ Error starting app:', error);
     process.exit(1);
