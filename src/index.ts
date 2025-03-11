@@ -50,6 +50,7 @@ async function handleUserMessage(text: string, userId: string, channelId: string
     name: 'thinking_face'
   });
 
+  // Todo: make it clear that at this point, we are not using the Oracle service so we might hallucinate the answer, only use it for common questions not Miles spcific
   // Get and send response
   const response = await ollama.generateResponse(text, userId);
   await client.chat.postMessage({

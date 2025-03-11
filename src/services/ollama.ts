@@ -24,11 +24,12 @@ interface PromptTemplate {
 export class OllamaService {
     private baseUrl: string;
     private userPreferences: UserPreferences;
+    private readonly MAX_RETRIES = 100;
 
     private readonly SYSTEM_CONTEXT = `You are Milo, a friendly and helpful AI assistant for Miles employees. 
 Some key points about your role:
 - You are direct and concise in your responses
-- You communicate in the same language as the user (Norwegian or English)
+- You communicate only in English
 - You aim to be helpful while staying factual
 - When you're unsure, you admit it and suggest asking a human
 - You're familiar with Miles' values and culture
@@ -130,5 +131,32 @@ Some key points about your role:
 
     resetUserModel(userId: string): void {
         this.userPreferences.resetUserModel(userId);
+    }
+
+    async generateSynonyms(term: string): Promise<string[]> {
+        let retries = 0;
+        while (retries < this.MAX_RETRIES) {
+            try {
+                // console.log(`Generating synonyms for term: "${term}" (Attempt ${retries + 1})`);
+                const prompt = `Generate a list of synonyms for the term "${term}" in the format of a JavaScript array. Ensure the response is a valid JSON array.`;
+                const response = await this.generateResponse(prompt, 'system', 'general');
+                const synonyms = JSON.parse(response);
+                if (!Array.isArray(synonyms)) {
+                    throw new Error('Response is not a valid array');
+                }
+                // todo: check that it isn't a with objects "key": [object Object], [object Object], [object Object], [object Object], [object Object], [object Object], [object Object]
+                if (synonyms.length > 0 && typeof synonyms[0] === 'object') {
+                    throw new Error('Response is an array of objects');
+                }
+
+                // console.log(`Generated synonyms for "${term}": ${synonyms.join(', ')}`);
+                return synonyms;
+            } catch (error) {
+                // console.error(`Failed to generate synonyms for term "${term}" on attempt ${retries + 1}:`, error);
+                retries++;
+            }
+        }
+        console.error(`Failed to generate synonyms for term "${term}" after ${this.MAX_RETRIES} attempts`);
+        return [];
     }
 }
