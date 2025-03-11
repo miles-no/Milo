@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import pkg from '@slack/bolt';
+import { WebClient } from '@slack/web-api';
 import { OllamaService } from "./services/ollama.js";
 import { CommandHandler } from "./services/CommandHandler.js";
 const { App } = pkg;
@@ -11,7 +12,7 @@ console.log('Starting Milo...');
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  socketMode: true, // Enable real-time event handling with Socket Mode to ease local development
+  socketMode: !!process.env.SOCKET_MODE,
   appToken: process.env.SLACK_APP_TOKEN
 });
 
@@ -37,7 +38,7 @@ app.event('reaction_added', async ({ event, client }) => {
   }
 });
 
-async function handleUserMessage(text: string, userId: string, channelId: string, messageTs: string, client: any) {
+async function handleUserMessage(text: string, userId: string, channelId: string, messageTs: string, client: WebClient) {
   // Check if it's a command
   const isCommand = await commandHandler.handleCommand(text, userId, channelId, messageTs, client);
   if (isCommand) return;
@@ -83,7 +84,13 @@ app.event('app_mention', async ({ event, client }) => {
     const question = event.text.replace(/<@[^>]+>/g, '').trim().toLowerCase();
 
     if (event.user) {
-      await handleUserMessage(question, event.user, event.channel, event.ts, client);
+      await handleUserMessage(
+        question,
+        event.user,
+        event.channel,
+        event.ts,
+        client as WebClient
+      );
     } else {
       throw new Error('User ID is undefined');
     }
