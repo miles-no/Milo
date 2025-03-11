@@ -169,11 +169,10 @@ export class OracleService {
         let processedKeywords = 0;
         for (const doc of this.documents) {
             for (const keyword of doc.keywords) {
-                if (!this.synonymMap.has(keyword) || this.synonymMap.get(keyword)?.length === 0) {
-                    // console.log(`Generating synonyms for keyword: ${keyword}`);
+                if (!this.synonymMap.has(keyword)) {
                     const synonyms = await this.ollamaService.generateSynonyms(keyword);
                     this.synonymMap.set(keyword, synonyms);
-                    // console.log(`Synonyms for "${keyword}": ${synonyms.join(', ')}`);
+                    await this.saveSynonymsBank();
                 }
                 processedKeywords++;
                 progressBar.update(processedKeywords);
@@ -182,7 +181,6 @@ export class OracleService {
 
         progressBar.stop();
         console.log('Synonym generation completed.');
-        await this.saveSynonymsBank();
     }
 
     private async loadSynonymsBank() {
@@ -285,12 +283,12 @@ export class OracleService {
     private async addSynonyms(terms: string[]) {
         // Each term in the group maps to all other terms in the group
         for (const term of terms) {
-            if (!this.synonymMap.has(term) || this.synonymMap.get(term)?.length === 0) {
+            if (!this.synonymMap.has(term)) {
                 const synonyms = await this.ollamaService.generateSynonyms(term);
                 this.synonymMap.set(term, synonyms);
+                await this.saveSynonymsBank();
             }
         }
-        await this.saveSynonymsBank();
     }
 
     private setupStopWords() {
