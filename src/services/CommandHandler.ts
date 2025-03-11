@@ -109,8 +109,6 @@ export class CommandHandler {
             thread_ts: threadTs,
             text: `👋 Hello <@${userId}>! I can:\n` +
                 `• Respond to mentions with \`@milo\` - I'll try to help with your questions\n` +
-                `• Answer questions about Miles documents and policies\n` +
-                `• Watch for reactions\n` +
                 `• \`list models\` - Show available AI models\n` +
                 `• \`use model <name>\` - Switch to a different model\n` +
                 `• \`reset model\` - Reset to the default model\n` +
