@@ -108,13 +108,17 @@ export class CommandHandler {
             channel: channelId,
             thread_ts: threadTs,
             text: `👋 Hello <@${userId}>! I can:\n` +
-                `• Respond to mentions with \`@milo\`\n` +
+                `• Respond to mentions with \`@milo\` - I'll try to help with your questions\n` +
+                `• Answer questions about Miles documents and policies\n` +
                 `• Watch for reactions\n` +
                 `• \`list models\` - Show available AI models\n` +
                 `• \`use model <name>\` - Switch to a different model\n` +
                 `• \`reset model\` - Reset to the default model\n` +
-                `• \`github\` (EXPERIMENTAL) - Create a GitHub issue from the current thread or previous message\n` +
-                `• \`github <text>\` (EXPERIMENTAL) - Create a GitHub issue with the provided text`
+                `• \`github\` (EXPERIMENTAL) - Create a GitHub issue from the current thread\n` +
+                `• \`github <text>\` (EXPERIMENTAL) - Create a GitHub issue with custom text\n\n` +
+                `📚 I have access to various Miles documents and can help answer questions about:\n` +
+                `• Company equipment and ordering procedures\n` +
+                `• More documents coming soon...`
         });
     }
 
