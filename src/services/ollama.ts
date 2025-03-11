@@ -16,25 +16,55 @@ interface OllamaError {
     error: string;
 }
 
+interface PromptTemplate {
+    system: string;
+    user: string;
+}
+
 export class OllamaService {
     private baseUrl: string;
     private userPreferences: UserPreferences;
+
+    private readonly SYSTEM_CONTEXT = `You are Milo, a friendly and helpful AI assistant for Miles employees. 
+Some key points about your role:
+- You are direct and concise in your responses
+- You communicate in the same language as the user (Norwegian or English)
+- You aim to be helpful while staying factual
+- When you're unsure, you admit it and suggest asking a human
+- You're familiar with Miles' values and culture
+- You always base your answers on provided context when available`;
+
+    private readonly PROMPT_TEMPLATES = {
+        general: {
+            system: this.SYSTEM_CONTEXT,
+            user: "Question: {message}\nAnswer:"
+        },
+        documentBased: {
+            system: `${this.SYSTEM_CONTEXT}\n\nAnswer based only on the following context. If the context doesn't contain relevant information, say so:\n{context}`,
+            user: "Question: {message}\nAnswer:"
+        },
+        github: {
+            system: "You are helping to create clear and concise GitHub issue descriptions. Format the summary professionally and include key points.",
+            user: "Please summarize this conversation into a GitHub issue description:\n{message}"
+        }
+    };
 
     constructor(baseUrl: string = 'http://localhost:11434') {
         this.baseUrl = baseUrl;
         this.userPreferences = new UserPreferences();
     }
 
-    private formatPrompt(userMessage: string): string {
-        return `You are Milo, a friendly and helpful AI assistant in Slack. 
-Keep responses concise and friendly.
-Question: ${userMessage}
-Answer:`;
+    private formatPrompt(userMessage: string, type: keyof typeof this.PROMPT_TEMPLATES = 'general', context?: string): string {
+        const template = this.PROMPT_TEMPLATES[type];
+        const systemPrompt = template.system.replace('{context}', context || '');
+        const userPrompt = template.user.replace('{message}', userMessage);
+
+        return `<s>${systemPrompt}\n\n${userPrompt}</s>`;
     }
 
-    async generateResponse(prompt: string, userId: string): Promise<string> {
+    async generateResponse(prompt: string, userId: string, type: keyof typeof this.PROMPT_TEMPLATES = 'general', context?: string): Promise<string> {
         try {
-            const formattedPrompt = this.formatPrompt(prompt);
+            const formattedPrompt = this.formatPrompt(prompt, type, context);
             const response = await fetch(`${this.baseUrl}/api/generate`, {
                 method: 'POST',
                 headers: {

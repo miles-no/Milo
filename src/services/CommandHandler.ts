@@ -2,14 +2,17 @@ import { WebClient } from '@slack/web-api';
 import type { ConversationsRepliesResponse } from '@slack/web-api';
 import { OllamaService } from './ollama.js';
 import { GitHubService } from './GitHubService.js';
+import { OracleService } from './OracleService.js';
 
 export class CommandHandler {
     private ollama: OllamaService;
     private github: GitHubService;
+    private oracle: OracleService;
 
     constructor(ollama: OllamaService) {
         this.ollama = ollama;
         this.github = new GitHubService();
+        this.oracle = new OracleService();
     }
 
     async handleCommand(command: string, userId: string, channelId: string, threadTs: string, client: WebClient): Promise<boolean> {
@@ -36,6 +39,24 @@ export class CommandHandler {
         if (command.startsWith('github')) {
             const text = command.replace('github', '').trim();
             await this.handleGitHubIssue(channelId, threadTs, text, client);
+            return true;
+        }
+
+        // If no command matched, treat as a general query
+        const relevantDocs = this.oracle.findRelevantDocuments(command);
+        if (relevantDocs) {
+            const response = await this.ollama.generateResponse(
+                command,
+                userId,
+                'documentBased',
+                relevantDocs
+            );
+
+            await client.chat.postMessage({
+                channel: channelId,
+                thread_ts: threadTs,
+                text: response
+            });
             return true;
         }
 
@@ -107,41 +128,30 @@ export class CommandHandler {
                 content = customText;
                 title = customText.substring(0, 50);
             } else {
-                // Try to get thread messages first
+                // Get thread messages
                 const result = await client.conversations.replies({
                     channel: channelId,
-                    ts: messageTs
+                    ts: messageTs,
+                    inclusive: true
                 }) as ConversationsRepliesResponse;
 
-                if (result.messages && result.messages.length > 1) {
+                if (result.messages && result.messages.length > 0) {
                     // We're in a thread, use all messages
                     content = result.messages
+                        .filter(m => m.text) // Filter out messages without text
                         .map(m => `${m.user}: ${m.text}`)
                         .join('\n');
                     title = result.messages[0]?.text?.substring(0, 50) ?? 'Thread discussion';
                 } else {
-                    // Not in a thread, get previous message
-                    const history = await client.conversations.history({
-                        channel: channelId,
-                        latest: messageTs,
-                        limit: 2,
-                        inclusive: true
-                    });
-
-                    if (!history.messages || history.messages.length < 2) {
-                        throw new Error('No previous message found');
-                    }
-
-                    const previousMessage = history.messages[1]; // Get the message before the command
-                    content = previousMessage.text ?? '';
-                    title = content.substring(0, 50);
+                    throw new Error('No messages found in the thread');
                 }
             }
 
-            // Generate summary using Ollama
+            // Generate summary using Ollama with github template
             const summary = await this.ollama.generateResponse(
-                `Summarize this conversation and format it as a GitHub issue description:\n${content}`,
-                'system'
+                content,
+                'system',
+                'github'
             );
 
             // Create GitHub issue
@@ -162,7 +172,7 @@ export class CommandHandler {
             await client.chat.postMessage({
                 channel: channelId,
                 thread_ts: messageTs,
-                text: "Sorry, I encountered an error while creating the GitHub issue."
+                text: "Sorry, I encountered an error while creating the GitHub issue. Make sure you're running this command in a thread or providing custom text."
             });
         }
     }
