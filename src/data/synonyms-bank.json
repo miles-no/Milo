@@ -1,1 +1,888 @@
-{}
+{
+  "2023": [
+    "2022",
+    "2024",
+    "2025"
+  ],
+  "computer": [
+    "computer",
+    "machine",
+    "electronic device",
+    "cyber gadget",
+    "digital tool"
+  ],
+  "mobile": [
+    "movable",
+    "mobile",
+    "portable",
+    "transportable"
+  ],
+  "cellphone": [
+    "mobile phone",
+    "handset",
+    "mobile device",
+    "smartphone",
+    "cell tower phone"
+  ],
+  "phone": [
+    "cell",
+    "telephone",
+    "mobile",
+    "smartphone",
+    "handset"
+  ],
+  "smartphone": [
+    "Device",
+    "Phone",
+    "Handheld Computer",
+    "Mobile Device",
+    "Portable Computer"
+  ],
+  "equipment": [
+    "device",
+    "tool",
+    "machine",
+    "object",
+    "asset",
+    "item",
+    "fixture",
+    "hardware"
+  ],
+  "pc": [
+    "console",
+    "processor",
+    "cpu",
+    "central processing unit",
+    "pocket computer"
+  ],
+  "laptop": [
+    "Computer",
+    "Personal Computer",
+    "Desktop",
+    "Tablet",
+    "Pad"
+  ],
+  "desktop": [
+    "monitor",
+    "screen",
+    "computer screen",
+    "terminal",
+    "console",
+    "interface"
+  ],
+  "workstation": [
+    "desk",
+    "office",
+    "computer terminal",
+    "console",
+    "station"
+  ],
+  "broadband": [
+    "Broadband",
+    "High-Speed Internet",
+    "Data Rate",
+    "Digital Subscriber Line",
+    "Fiber-Optic Internet"
+  ],
+  "internet": [
+    "global network",
+    "web",
+    "cybernetic infrastructure",
+    "digital realm"
+  ],
+  "wifi": [
+    "radio frequency",
+    "network signal",
+    "internet connectivity"
+  ],
+  "guidelines": [
+    "rules",
+    "regulations",
+    "standards",
+    "directions",
+    "instructions",
+    "protocols"
+  ],
+  "ordering": [
+    "arranging",
+    "organizing",
+    "setting up",
+    "putting together",
+    "assembling"
+  ],
+  "procedures": [
+    "rules",
+    "processes",
+    " protocols",
+    " procedures",
+    " protocols"
+  ],
+  "selection": [
+    "choice",
+    "picking",
+    "scouting",
+    "culling",
+    "narrowing down",
+    "selecting"
+  ],
+  "network": [
+    "communication",
+    "connection",
+    "links",
+    "linkage",
+    "system",
+    "collaboration",
+    "teamwork",
+    "group",
+    "ensemble"
+  ],
+  "expense": [
+    "cost",
+    "payment",
+    " expenditure",
+    "outlay",
+    " expense"
+  ],
+  "replacement": [
+    "substitute",
+    "replacement",
+    "replacing",
+    "alteration",
+    "reduction"
+  ],
+  "cost": [
+    "amount",
+    "price",
+    "charge",
+    "fare",
+    "rate",
+    "honorarium",
+    "revenue"
+  ],
+  "payment": [
+    "amount",
+    "fee",
+    "charge",
+    "revenue",
+    "remittance",
+    "transfer"
+  ],
+  "reimbursement": [
+    "Payment",
+    "Refund",
+    "Allowance",
+    "Compensation",
+    "Benefits",
+    "Compensatory payment",
+    "Reimbursement"
+  ],
+  "ensure": [
+    "ensure",
+    "guarantee",
+    "make certain",
+    "affirm",
+    "confirm",
+    "verify",
+    "provision",
+    "arrange"
+  ],
+  "efficiency": [
+    "effectiveness",
+    "productivity",
+    "streamlining",
+    "convenience",
+    "efficacy"
+  ],
+  "salary": [
+    "pay",
+    "wages",
+    "remuneration",
+    "compensation",
+    "earnings"
+  ],
+  "daily": [
+    "every",
+    "constantly",
+    "regularly",
+    "on a regular basis",
+    "monthly",
+    "weekly",
+    "fortnightly",
+    "bi-weekly"
+  ],
+  "wage": [
+    "Salary",
+    "Remuneration",
+    "Compensation",
+    "Pay",
+    "Rate",
+    "Dollars",
+    "Money",
+    "Taxes",
+    "Benefits"
+  ],
+  "pay": [
+    "salary",
+    "wages",
+    "remuneration",
+    "compensation",
+    "earnings",
+    "remuneration rate"
+  ],
+  "work": [
+    "job",
+    "employment",
+    "occupation",
+    "career",
+    "profession",
+    "activity",
+    " occupation"
+  ],
+  "responsible": [
+    "accountable",
+    "dutiful",
+    "obligated",
+    "proactive",
+    "reflective",
+    "responsible",
+    "removable",
+    "responsibly",
+    "responsive",
+    "service-oriented"
+  ],
+  "compensation": [
+    "BONUS",
+    "Bonus",
+    "Pay",
+    "Salary",
+    "Remuneration",
+    "Compensations"
+  ],
+  "vacation": [
+    "trip",
+    "holiday",
+    "break",
+    "leave",
+    "absence"
+  ],
+  "selecting": [
+    "choose",
+    "picking",
+    "selecting",
+    "chosen",
+    "opted"
+  ],
+  "holiday": [
+    "vacation",
+    "break",
+    "weekend",
+    "day off",
+    "leave"
+  ],
+  "device": [
+    " gadget",
+    "tool",
+    "apparatus",
+    "equipment",
+    "device",
+    "machine"
+  ],
+  "meet": [
+    "Attend",
+    "Converse",
+    "Discuss",
+    "Interact",
+    "Collaborate",
+    "Engage"
+  ],
+  "time-off": [
+    "vacation",
+    "leave",
+    "holiday",
+    "break",
+    "day off"
+  ],
+  "professional": [
+    "respected",
+    "accomplished",
+    "skilled",
+    "expert",
+    "capable",
+    "efficient",
+    "effective",
+    "valued"
+  ],
+  "needs": [
+    "Requires",
+    "Desires",
+    "Wants",
+    "Must",
+    "Should",
+    "Needs"
+  ],
+  "require": [
+    "Need",
+    "Must have",
+    "Required",
+    "Essential",
+    "Needed"
+  ],
+  "leave": [
+    "departure",
+    "quit",
+    "retire",
+    "exit",
+    "absentee",
+    "vacation",
+    "dissolve"
+  ],
+  "additional": [
+    "extra",
+    "supplemental",
+    "adDITIONAL",
+    "further",
+    "substantive",
+    "prolonged"
+  ],
+  "meeting": [
+    "Conversation",
+    "Discussion",
+    "Assembly",
+    "Conference",
+    "Session",
+    "Council",
+    "Committee",
+    "Workshop"
+  ],
+  "conference": [
+    "meeting",
+    "assembly",
+    "session",
+    "symposium",
+    "congress"
+  ],
+  "gathering": [
+    "Assemble",
+    "Collect",
+    "Unite",
+    "Join",
+    "Combine"
+  ],
+  "project": [
+    "initiative",
+    "plan",
+    "task",
+    "assignment",
+    " endeavour",
+    " undertaking"
+  ],
+  "assignment": [
+    "task",
+    "tasking",
+    "order",
+    "job",
+    "commission",
+    "orderly",
+    "mission",
+    "directive",
+    "taskforce",
+    "command"
+  ],
+  "task": [
+    "assignment",
+    "order",
+    "job",
+    "mission",
+    "quest",
+    "project",
+    "task"
+  ],
+  "hardware": [
+    "equipment",
+    "device",
+    "tool",
+    "machine",
+    "component",
+    "system"
+  ],
+  "feel": [
+    "appreciate",
+    "regard",
+    "resentment",
+    "pleasure",
+    "displeasure",
+    "delight",
+    "distress",
+    "amusement"
+  ],
+  "free": [
+    "unrestricted",
+    "spontaneous",
+    "liberal",
+    "relaxed",
+    "open",
+    "undowered"
+  ],
+  "gear": [
+    "axle",
+    "band",
+    "clutch",
+    "differential",
+    "flywheel",
+    "gearbox",
+    "gears"
+  ],
+  "order": [
+    "arrangement",
+    "disposition",
+    "ordinance",
+    "regulation",
+    "precedence",
+    "priority"
+  ],
+  "inquire": [
+    "Ask",
+    "Enquire",
+    "Request",
+    "Inscrivez-vous",
+    "Perguntas",
+    "Question",
+    "Asker",
+    "Inquire",
+    "Demande",
+    "Demandez",
+    "Preguntas",
+    "Peticion"
+  ],
+  "various": [
+    "Many",
+    "Different",
+    "Various",
+    "Multiple",
+    "Diverse"
+  ],
+  "options": [
+    "alternatives",
+    "choices",
+    "pursuits",
+    "opportunities"
+  ],
+  "available": [
+    "Accessible",
+    "Available",
+    "Allotted",
+    "Planned",
+    "Scheduled",
+    "Listed"
+  ],
+  "purchase": [
+    "buy",
+    "purchase",
+    "achat",
+    "compra",
+    "buys",
+    "retail purchase",
+    "commerce",
+    "sale",
+    "transaction",
+    "treatment"
+  ],
+  "buy": [
+    "purchase",
+    "buying",
+    "acquire",
+    "procure",
+    "get"
+  ],
+  "paid": [
+    "compensated",
+    "wage",
+    "salary",
+    "remuneration",
+    "dues"
+  ],
+  "office": [
+    "building",
+    "space",
+    "area",
+    "room",
+    "suite",
+    "floor",
+    "cave",
+    "cell",
+    "pod"
+  ],
+  "expected": [
+    "planned",
+    "anticipated",
+    "predicted",
+    "scheduled",
+    "foreseen"
+  ],
+  "lifespan": [
+    "duration",
+    "term",
+    "expanse",
+    "range",
+    "period"
+  ],
+  "computers": [
+    "computer",
+    "machine",
+    "device",
+    "system",
+    "equipment"
+  ],
+  "years": [
+    "years",
+    "years ago",
+    "decades",
+    "centuries",
+    "millennia"
+  ],
+  "telenor": [
+    "Telénor",
+    "Telenor",
+    "TeleNor",
+    "TeleNorbord",
+    "Telespore",
+    "TeleSporo"
+  ],
+  "expenses": [
+    "costs",
+    " expenditures",
+    "deductions",
+    "charges",
+    "outlays",
+    "budgeting"
+  ],
+  "usage": [
+    "application",
+    "use",
+    "functionality",
+    "meaning",
+    "implementation"
+  ],
+  "coverage": [
+    "benefit",
+    "adoption",
+    "security",
+    "protection",
+    "services",
+    "access",
+    "participation",
+    "availability",
+    "spectrum"
+  ],
+  "agreed": [
+    "concurred",
+    "accepted",
+    "confirmed",
+    "acknowledged"
+  ],
+  "annual": [
+    "yearly",
+    "annually",
+    "biennially",
+    "periodically",
+    "repeatedly"
+  ],
+  "amount": [
+    "quantity",
+    "magnitude",
+    "size",
+    "degree",
+    "percentage",
+    "measure"
+  ],
+  "provider": [
+    "Supplier",
+    "Vendor",
+    "Partner",
+    "Subcontractor",
+    "Contractor",
+    "Vendor"
+  ],
+  "currently": [
+    "now",
+    "right now",
+    "at this moment",
+    "in the present time",
+    "till now"
+  ],
+  "mobil": [
+    "mobile",
+    "movable",
+    "transportable",
+    "portable"
+  ],
+  "tracking": [
+    "monitor",
+    "track",
+    "trail",
+    "log",
+    "record",
+    "follow"
+  ],
+  "monitor": [
+    "Monitor",
+    "track",
+    "observe",
+    "watch",
+    "scout"
+  ],
+  "logging": [
+    "harvesting",
+    "measuring",
+    "counting",
+    "reckoning",
+    "accounting"
+  ],
+  "app": [
+    "application",
+    "software",
+    "program",
+    "utility",
+    "tool",
+    "package"
+  ],
+  "subscription": [
+    "agreement",
+    "membership",
+    "licensing",
+    "subscription agreement",
+    "plan",
+    "membership agreement"
+  ],
+  "start": [
+    "begin",
+    "launch",
+    "initiate",
+    "instigate",
+    "kickstart",
+    "get started"
+  ],
+  "15gb": [
+    "terabytes",
+    "gigabytes",
+    "megabytes"
+  ],
+  "data": [
+    "information",
+    "facts",
+    "data points",
+    "statistics",
+    "numbers",
+    "figures",
+    "info"
+  ],
+  "submitted": [
+    "accepted",
+    "approved",
+    "provided",
+    "sent"
+  ],
+  "every": [
+    "always",
+    "entirely",
+    "completely",
+    "entirely",
+    "totally",
+    "whole"
+  ],
+  "quarter": [
+    "period",
+    "cycle",
+    "interval",
+    "section"
+  ],
+  "miles": [
+    "mileage",
+    "miles",
+    "kilometers",
+    "miles per hour"
+  ],
+  "covers": [
+    "entirely",
+    "completely",
+    "wholly",
+    "fully",
+    "entirely",
+    "absolutely",
+    "completely",
+    "totally",
+    "entirely",
+    "completely"
+  ],
+  "employees": [
+    "staff",
+    "employees",
+    "workers",
+    "team members",
+    "collaborators",
+    "associates"
+  ],
+  "15th": [
+    "First",
+    "Fifteenth",
+    " Fifteenth Century",
+    "Fifteenth Dynasty",
+    "Fifteenth Milestone",
+    "Fifteenth Anniversary",
+    "Fifteenth Annual Meeting"
+  ],
+  "fixed": [
+    "stable",
+    "firm",
+    "constant",
+    "unaltered",
+    "unchanging"
+  ],
+  "receive": [
+    "accept",
+    "take",
+    "obtain",
+    "impose",
+    "agree",
+    "indicate",
+    "determine"
+  ],
+  "commission": [
+    "payment",
+    "remuneration",
+    "remuneration fee",
+    "salary",
+    "bonus",
+    "payroll"
+  ],
+  "schedule": [
+    " timetable",
+    "calendar",
+    "plan",
+    "appointment",
+    "arrange",
+    "book"
+  ],
+  "regular": [
+    "average",
+    "normal",
+    "standard",
+    "common",
+    "normal",
+    "ordinary"
+  ],
+  "payments": [
+    "bills",
+    "charges",
+    "transactions",
+    "rebates",
+    "invoicing",
+    "subscriptions",
+    "services",
+    "accounts"
+  ],
+  "month": [
+    "mon",
+    "weekend",
+    "half-yearly",
+    "quarterly",
+    "annually"
+  ],
+  "june": [
+    "June",
+    "Jun"
+  ],
+  "july": [
+    "July",
+    "Julyus",
+    "Iulius",
+    "Sedanville",
+    "Julian",
+    "Julie",
+    "Jolyn"
+  ],
+  "deductions": [
+    "allocations",
+    "exclusions",
+    "reductions",
+    "taxes",
+    "disbursements"
+  ],
+  "deduction": [
+    "Analysis",
+    "Inference",
+    "Conclusion",
+    "Insight",
+    "Theory",
+    "Reasoning",
+    "Drawing",
+    "Reaching",
+    "Deriving"
+  ],
+  "calculated": [
+    "assessed",
+    "evaluated",
+    "determined",
+    "precise",
+    "exact"
+  ],
+  "26ths": [
+    "twenties",
+    "tenth",
+    "nineteen",
+    "twenty-first"
+  ],
+  "equivalent": [
+    "corresponding",
+    "comparable",
+    "matching",
+    "similar",
+    "alike"
+  ],
+  "days": [
+    "day",
+    "days",
+    "durations"
+  ],
+  "updated": [
+    "modified",
+    "revised",
+    "changed",
+    "refreshed",
+    "improved"
+  ],
+  "ann": [
+    "ann",
+    "annual",
+    "anniversary",
+    "annuity",
+    "anticipatory",
+    "appointment"
+  ],
+  "kristin": [
+    "Kristen",
+    "Kirsten",
+    "Kestrel",
+    "Cristina",
+    "Kristy"
+  ],
+  "haveland": [
+    "village",
+    "town",
+    "city"
+  ],
+  "september": [
+    "September",
+    "Sept",
+    "Sepetebor",
+    "Septemberus",
+    "Septemberium"
+  ],
+  "last": [
+    "end",
+    "final",
+    "last",
+    "most recent",
+    "latest"
+  ]
+}
