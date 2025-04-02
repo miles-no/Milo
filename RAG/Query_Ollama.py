@@ -81,7 +81,7 @@ def format_context_for_llm(results):
     
     return context
 
-def query_ollama_with_rag(user_query, model_name="llama3.2", connection_string=None, similarity_threshold=70):
+def query_ollama_with_rag(user_query, model_name, connection_string=None, similarity_threshold=70):
     """Query Ollama with RAG using PostgreSQL vector search"""
     
     # Load the embedding model
@@ -90,7 +90,7 @@ def query_ollama_with_rag(user_query, model_name="llama3.2", connection_string=N
     
     # Create an embedding for the query
     print("Creating query embedding...")
-    task = "Given a search, find relevant documents that answer the question"
+    task = "Given a search, find relevant documents that answer the question. If no relevant documents are found, say that you do not have enough information to answer the question."
     # task = 'Gitt et søk, finn relevante dokumenter som besvarer spørsmålet'
     formatted_query = get_detailed_instruct(task, user_query)
     query_embedding = create_query_embedding(formatted_query, embedding_model)
@@ -99,7 +99,7 @@ def query_ollama_with_rag(user_query, model_name="llama3.2", connection_string=N
     # Search for similar documents
     print("Searching for relevant documents...")
     results = search_similar_documents_db(connection_string, query_embedding)
-    print("Results from searching relevant documents: ", results)
+    # print("Results from searching relevant documents: ", results)
 
     # Filter results by similarity threshold
     filtered_results = [r for r in results if r['similarity'] >= similarity_threshold]
@@ -172,11 +172,6 @@ def main():
     print(result['answer'])
     print("="*80)
     
-    # Print sources (optional)
-    print("\nSources:")
-    for i, doc in enumerate(result['context']):
-        print(f"{i+1}. Relevance: {doc['similarity']:.1f}%")
-        print(f"   Content: {doc['content'][:100]}...")
     
 if __name__ == "__main__":
     main()
