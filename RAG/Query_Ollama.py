@@ -5,9 +5,6 @@ import torch
 from sentence_transformers import SentenceTransformer
 import argparse
 
-# Reuse functions from your existing code
-def get_detailed_instruct(task_description: str, query: str) -> str:
-    return f'Instruct: {task_description}\nQuery: {query}'
 
 def create_query_embedding(query, model):
     """Generate embedding for a query"""
@@ -35,18 +32,18 @@ def search_similar_documents_db(connection_string, query_embedding, top_k=5):
     # Query for similar documents using cosine distance with explicit casting
     cursor.execute("""
     SELECT 
-        d.id, 
-        d.content, 
-        d.metadata,
-        1 - (e.embedding <=> %s::vector) AS similarity
+    d.id, 
+    d.content, 
+    d.metadata,
+    1 - (e.embedding <=> %s::vector) AS similarity
     FROM 
         embeddings e
     JOIN 
         documents d ON e.document_id = d.id
     ORDER BY 
-        e.embedding <=> %s::vector
+        similarity DESC
     LIMIT %s;
-    """, (query_embedding_list, query_embedding_list, top_k))
+    """, (query_embedding_list, top_k))
     
     results = cursor.fetchall()
     
@@ -167,7 +164,7 @@ def main():
     parser.add_argument('--model', type=str, default='gemma3', help='Ollama model to use (default: gemma3)')
     parser.add_argument('--connection', type=str, default='postgresql://vector_user:vector_password@localhost:5432/vector_db', 
                         help='PostgreSQL connection string')
-    parser.add_argument('--threshold', type=float, default=70.0, 
+    parser.add_argument('--threshold', type=float, default=80.0, 
                         help='Similarity threshold for document relevance (0-100)')
     
     args = parser.parse_args()
