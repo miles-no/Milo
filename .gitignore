@@ -4,7 +4,7 @@ dist/
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,macos
 
 RAG/llm_chunked_data/*
-RAG/vector_db/__pycache__
+*\__pycache__
 
 
 ### macOS ###
