@@ -71,17 +71,30 @@ def search_similar_documents_db(connection_string, query_embedding, top_k=5):
     
     return formatted_results
 
-def format_context_for_llm(results):
+def format_norwegian_context_for_llm(results):
     """Format the retrieved documents into a context string for the LLM"""
-    context = "Here are some relevant documents to help answer the question:\n\n"
+
+    context = ""
+        
+    for i, result in enumerate(results):
+        context += f"Dokument {i+1} (Relevans: {result['similarity']:.1f}%):\n"
+        context += f"{result['content']}\n\n"
     
+    return context
+
+
+def format_english_context_for_llm(results):
+    """Format the retrieved documents into a context string for the LLM"""
+
+    context_en = "Here are some relevant documents to help answer the question:\n\n"
+        
     for i, result in enumerate(results):
         context += f"Document {i+1} (Relevance: {result['similarity']:.1f}%):\n"
         context += f"{result['content']}\n\n"
     
     return context
 
-def query_ollama_with_rag(user_query, model_name, connection_string=None, similarity_threshold=70):
+def query_ollama_with_rag(user_query, model_name, connection_string=None, similarity_threshold=70, language='no'):
     """Query Ollama with RAG using PostgreSQL vector search"""
     
     # Load the embedding model
@@ -92,8 +105,7 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
     print("Creating query embedding...")
     task = "Given a search, find relevant documents that answer the question. If no relevant documents are found, say that you do not have enough information to answer the question."
     # task = 'Gitt et søk, finn relevante dokumenter som besvarer spørsmålet'
-    formatted_query = get_detailed_instruct(task, user_query)
-    query_embedding = create_query_embedding(formatted_query, embedding_model)
+    query_embedding = create_query_embedding(user_query, embedding_model)
     
 
     # Search for similar documents
@@ -110,27 +122,29 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
         print(f"No documents found above the similarity threshold of {similarity_threshold}%. Using all retrieved documents.")
         filtered_results = results
     
-    # Format context for LLM
-    context = format_context_for_llm(filtered_results)
+    # Set the language for the context
+    if language == 'no':
+        # Format context for LLM in Norwegian
+        context = format_norwegian_context_for_llm(filtered_results)
+        prompt = f"""Du er en norsk AI-assistent som hjelper med å svare på spørsmål ved hjelp av gitt informasjon.
+        Basert på følgende kontekstinformasjon:
+        {context}
+        Spørsmål: {user_query}
+        Svar på spørsmålet basert på informasjonen gitt ovenfor. Hvis svaret ikke finnes i konteksten,
+        si at du ikke har nok informasjon til å besvare spørsmålet. Vær presis og konkret.
+        """
+    else:
+        # Format context for LLM in English
+        context = format_english_context_for_llm(filtered_results)
     
-    # Create prompt for Ollama
-    prompt = f"""You are an AI assistant that helps answer questions using the provided information.
-Based on the following context information:
-{context}
-Question: {user_query}
-Answer the question based on the information given above. If the answer is not found in the context,
-say that you do not have enough information to answer the question. Be precise and specific. Also, answer in the language the question is asked in.
-"""
-    #prompt = f"""Du er en norsk AI-assistent som hjelper med å svare på spørsmål ved hjelp av gitt informasjon.
-#Basert på følgende kontekstinformasjon:
-
-#{context}
-
-#Spørsmål: {user_query}
-
-#Svar på spørsmålet basert på informasjonen gitt ovenfor. Hvis svaret ikke finnes i konteksten, 
-#si at du ikke har nok informasjon til å besvare spørsmålet. Vær presis og konkret.
-#"""
+        # Create prompt for Ollama
+        prompt = f"""You are an AI assistant that helps answer questions using the provided information.
+        Based on the following context information:
+        {context}
+        Question: {user_query}
+        Answer the question based on the information given above. If the answer is not found in the context,
+        say that you do not have enough information to answer the question. Be precise and specific. Also, answer in the language the question is asked in.
+        """
     
     # Query Ollama
     print(f"Querying Ollama with model: {model_name}...")
