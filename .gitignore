@@ -3,6 +3,10 @@ dist/
 # Created by https://www.toptal.com/developers/gitignore/api/node,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,macos
 
+RAG/llm_chunked_data/*
+RAG/vector_db/__pycache__
+
+
 ### macOS ###
 # General
 .DS_Store

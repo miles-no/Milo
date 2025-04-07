@@ -99,7 +99,7 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
     # Search for similar documents
     print("Searching for relevant documents...")
     results = search_similar_documents_db(connection_string, query_embedding)
-    # print("Results from searching relevant documents: ", results)
+    print("Results from searching relevant documents: ", results)
 
     # Filter results by similarity threshold
     filtered_results = [r for r in results if r['similarity'] >= similarity_threshold]
@@ -119,7 +119,7 @@ Based on the following context information:
 {context}
 Question: {user_query}
 Answer the question based on the information given above. If the answer is not found in the context,
-say that you do not have enough information to answer the question. Be precise and specific.
+say that you do not have enough information to answer the question. Be precise and specific. Also, answer in the language the question is asked in.
 """
     #prompt = f"""Du er en norsk AI-assistent som hjelper med å svare på spørsmål ved hjelp av gitt informasjon.
 #Basert på følgende kontekstinformasjon:
@@ -150,7 +150,7 @@ say that you do not have enough information to answer the question. Be precise a
 def main():
     parser = argparse.ArgumentParser(description='Query Ollama with RAG using vector database')
     parser.add_argument('query', type=str, help='The question to ask')
-    parser.add_argument('--model', type=str, default='llama3.2', help='Ollama model to use (default: llama3.2)')
+    parser.add_argument('--model', type=str, default='gemma3', help='Ollama model to use (default: gemma3)')
     parser.add_argument('--connection', type=str, default='postgresql://vector_user:vector_password@localhost:5432/vector_db', 
                         help='PostgreSQL connection string')
     parser.add_argument('--threshold', type=float, default=70.0, 
