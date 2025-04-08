@@ -4,17 +4,16 @@ from sentence_transformers import SentenceTransformer
 from vector_db.clear_db import clear_db
 import json
 import os
+from dotenv import load_dotenv
 
-connection_string = "postgresql://vector_user:vector_password@localhost:5432/vector_db"
+load_dotenv()
+connection_string = os.getenv("POSTGRES_CONNECTION_STRING")
 
 def Embedd_And_Insert_LLM_Chunks():
     ## Only used during testing, it clears the database for data before insertion.
     clear_db(connection_string)
 
     documents, doc_metadata = LoadRagData("./RAG/llm_chunked_data")
-    
-    all_chunks = []
-    all_metadata = []
 
     model = SentenceTransformer('intfloat/multilingual-e5-large-instruct')
     
@@ -30,45 +29,9 @@ def Embedd_And_Insert_LLM_Chunks():
             # Insert the chunk and its embedding into the database
             insert_document_data_and_embedding(connection_string, chunk, embedding, metadata_to_insert)
 
-
-def Embedd_And_Insert_500_Char_Chunks():
-    ## Only used during testing, it clears the database for data before insertion.
-    clear_db(connection_string)
-
-    documents, doc_metadata = LoadRagData("./RAG/data")
-    
-    all_chunks = []
-    all_metadata = []
-
-    model = SentenceTransformer('intfloat/multilingual-e5-large-instruct')
-    
-    for i, doc in enumerate(documents):
-        chunked_data, chunk_metadata = chunk_text(doc)
-        
-        for j, chunk in enumerate(chunked_data):
-            all_chunks.append(chunk)
-            
-            # Combine document and chunk metadata
-            combined_metadata = doc_metadata[i].copy()
-            all_metadata.append(combined_metadata)
-
-            embeddings = create_embeddings(chunked_data, model)
-
-        # Insert embeddings into database
-        try:
-            document_ids = store_documents_and_embeddings(
-                connection_string,
-                chunked_data,
-                embeddings,
-                all_metadata
-            )
-        except Exception as e:
-            print(f"Error storing documents and embeddings: {e}")
-            return
         
 def LoadRagData(directory_path):
     documents, doc_metadata = load_documents(directory_path)
-
     return documents, doc_metadata
 
 

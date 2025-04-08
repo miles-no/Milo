@@ -1,6 +1,6 @@
 import psycopg2
-
-connection_string = "postgresql://vector_user:vector_password@localhost:5432/vector_db"
+import os
+from dotenv import load_dotenv
 
 def clear_db(connection_string):
     """Set up PostgreSQL with pgvector tables"""
@@ -18,4 +18,6 @@ def clear_db(connection_string):
     print("Database cleared for data.")
 
 if __name__ == "__main__":
+    load_dotenv()
+    connection_string = os.getenv("POSTGRES_CONNECTION_STRING")
     clear_db(connection_string)

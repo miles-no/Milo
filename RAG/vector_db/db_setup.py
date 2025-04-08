@@ -1,6 +1,7 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
 
-connection_string = "postgresql://vector_user:vector_password@localhost:5432/vector_db"
 
 def setup_db(connection_string):
     """Set up PostgreSQL with pgvector tables"""
@@ -48,4 +49,7 @@ def setup_db(connection_string):
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    # Load environment variables
+    connection_string = os.getenv("POSTGRES_CONNECTION_STRING")
     setup_db(connection_string)

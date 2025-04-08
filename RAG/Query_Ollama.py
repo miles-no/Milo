@@ -5,7 +5,8 @@ import torch
 from sentence_transformers import SentenceTransformer
 import argparse
 import re
-
+import os
+from dotenv import load_dotenv
 
 def create_query_embedding(query, model):
     """Generate embedding for a query"""
@@ -91,9 +92,10 @@ def format_english_context_for_llm(results):
     
     return context
 
-def query_ollama_with_rag(user_query, model_name, connection_string=None, similarity_threshold=70, language='no'):
+
+def query_ollama_with_rag(user_query, model_name, connection_string, similarity_threshold=70, language='no'):
     """Query Ollama with RAG using PostgreSQL vector search"""
-    
+
     # Load the embedding model
     print("Loading embedding model...")
     embedding_model = SentenceTransformer('intfloat/multilingual-e5-large-instruct')
@@ -105,7 +107,6 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
     # Search for similar documents
     print("Searching for relevant documents...")
     results = search_similar_documents_db(connection_string, query_embedding)
-    print("Results from searching relevant documents: ", results)
 
     # Filter results by similarity threshold
     filtered_results = [r for r in results if r['similarity'] >= similarity_threshold]
@@ -159,6 +160,8 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
     }
 
 def main():
+    load_dotenv()
+    connection_string = os.getenv("POSTGRES_CONNECTION_STRING")
     parser = argparse.ArgumentParser(description='Query Ollama with RAG using vector database')
     parser.add_argument('query', type=str, help='The question to ask')
     parser.add_argument('--model', type=str, default='gemma3', help='Ollama model to use (default: gemma3)')
