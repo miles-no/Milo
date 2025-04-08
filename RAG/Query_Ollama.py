@@ -4,6 +4,7 @@ import psycopg2
 import torch
 from sentence_transformers import SentenceTransformer
 import argparse
+import re
 
 
 def create_query_embedding(query, model):
@@ -74,7 +75,8 @@ def format_norwegian_context_for_llm(results):
     context = ""
         
     for i, result in enumerate(results):
-        context += f"Dokument {i+1} (Relevans: {result['similarity']:.1f}%):\n"
+        kilde = str(result['metadata']["filename"]).replace(".txt", "").replace(".json", "").replace(".md", "")
+        context += f'Kilde: "{kilde}" (Relevans: {result['similarity']:.1f}%):\n'
         context += f"{result['content']}\n\n"
     
     return context
@@ -83,8 +85,6 @@ def format_norwegian_context_for_llm(results):
 def format_english_context_for_llm(results):
     """Format the retrieved documents into a context string for the LLM"""
 
-    context_en = "Here are some relevant documents to help answer the question:\n\n"
-        
     for i, result in enumerate(results):
         context += f"Document {i+1} (Relevance: {result['similarity']:.1f}%):\n"
         context += f"{result['content']}\n\n"
@@ -100,10 +100,7 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
     
     # Create an embedding for the query
     print("Creating query embedding...")
-    task = "Given a search, find relevant documents that answer the question. If no relevant documents are found, say that you do not have enough information to answer the question."
-    # task = 'Gitt et søk, finn relevante dokumenter som besvarer spørsmålet'
     query_embedding = create_query_embedding(user_query, embedding_model)
-    
 
     # Search for similar documents
     print("Searching for relevant documents...")
@@ -127,7 +124,7 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
         Basert på følgende kontekstinformasjon:
         {context}
         Spørsmål: {user_query}
-        Svar på spørsmålet basert på informasjonen gitt ovenfor. Hvis svaret ikke finnes i konteksten,
+        Svar på spørsmålet basert på informasjonen gitt ovenfor, legg til dokumentet som kilde for informasjonen du gir. Et eksempel kan være Kilde: [navn-på-kilde]. Hvis svaret ikke finnes i konteksten,
         si at du ikke har nok informasjon til å besvare spørsmålet. Vær presis og konkret.
         """
     else:
@@ -152,9 +149,12 @@ def query_ollama_with_rag(user_query, model_name, connection_string=None, simila
         }
     ])
     
+    # Regex that removes text that corresponds to "(Relevanse: xx.x%)" in the response
+    cleaned_response = re.sub(r'\(Relevans: \d+\.\d+%\)', '', response['message']['content'])
+
     return {
         'query': user_query,
-        'answer': response['message']['content'],
+        'answer': cleaned_response,
         'context': filtered_results
     }
 
