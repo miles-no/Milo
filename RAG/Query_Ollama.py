@@ -165,8 +165,6 @@ def main():
     parser = argparse.ArgumentParser(description='Query Ollama with RAG using vector database')
     parser.add_argument('query', type=str, help='The question to ask')
     parser.add_argument('--model', type=str, default='gemma3', help='Ollama model to use (default: gemma3)')
-    parser.add_argument('--connection', type=str, default='postgresql://vector_user:vector_password@localhost:5432/vector_db', 
-                        help='PostgreSQL connection string')
     parser.add_argument('--threshold', type=float, default=80.0, 
                         help='Similarity threshold for document relevance (0-100)')
     
@@ -176,7 +174,7 @@ def main():
     result = query_ollama_with_rag(
         user_query=args.query,
         model_name=args.model,
-        connection_string=args.connection,
+        connection_string=connection_string,
         similarity_threshold=args.threshold
     )
     
