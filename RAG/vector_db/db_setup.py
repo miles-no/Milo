@@ -17,7 +17,7 @@ def setup_db(connection_string):
     CREATE TABLE IF NOT EXISTS documents (
         id SERIAL PRIMARY KEY,
         content TEXT NOT NULL,
-        metadata JSONB
+        source TEXT NOT NULL
     );
     """)
     print("Documents table created.")
