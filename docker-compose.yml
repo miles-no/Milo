@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  db:
+    image: ankane/pgvector:latest
+    container_name: pgvector_db
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=vector_user
+      - POSTGRES_PASSWORD=vector_password
+      - POSTGRES_DB=vector_db
+
+volumes:
+  db:
+    driver: local 
