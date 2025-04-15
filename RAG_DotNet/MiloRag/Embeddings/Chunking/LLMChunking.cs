@@ -17,6 +17,6 @@ public class LLMChunking
         var userMessage = "Vennligst del opp følgende dokument i segmenter: " + document;
         
         var ollama = new Ollama();
-        return await ollama.OllamaJsonResponse<ChunkedData>("gemma3:27b", userMessage, systemMessage);
+        return await ollama.OllamaJsonResponse<ChunkedData>("gemma3", userMessage, systemMessage);
     }
 }
