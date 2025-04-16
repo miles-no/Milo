@@ -18,7 +18,7 @@ internal static class Program
         var queryEmbeddings = await Utils.Embeddings.CreateVectorEmbedding(query ?? throw new ArgumentNullException(query));
         var vectorArray = Utils.Embeddings.ConvertEmbeddingListToArray(queryEmbeddings);
         
-        var results = PostgreSql.VectorySimiliarySearch(vectorArray, 5);
+        var results = PostgreSql.VectorSimilaritySearch(vectorArray, 5);
         var options = new JsonSerializerOptions
         {
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping

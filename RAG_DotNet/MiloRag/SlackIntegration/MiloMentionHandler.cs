@@ -29,7 +29,7 @@ internal abstract class MiloMentionHandler(ISlackApiClient slack) : IEventHandle
             var queryEmbeddings = await Embeddings.CreateVectorEmbedding(queryText);
 
             var vectorArray = Embeddings.ConvertEmbeddingListToArray(queryEmbeddings);
-            var results = PostgreSql.VectorySimiliarySearch(vectorArray);
+            var results = PostgreSql.VectorSimilaritySearch(vectorArray);
 
             var options = new JsonSerializerOptions
             {
