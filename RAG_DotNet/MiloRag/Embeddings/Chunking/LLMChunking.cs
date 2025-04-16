@@ -1,5 +1,4 @@
 using Utils;
-using Utils.Ollama;
 
 namespace Embeddings.Chunking;
 
