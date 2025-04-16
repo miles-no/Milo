@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using Utils;
-using Utils.Ollama;
+using Utils;
 
 namespace QueryOllama;
 

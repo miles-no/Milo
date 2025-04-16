@@ -1,12 +1,23 @@
 using System.Text.Json;
 using Microsoft.Extensions.AI;
 
-namespace Utils.Ollama;
+namespace Utils;
 
 public class Ollama
 {
     private readonly string? _ollamaBaseUrl = Environment.GetEnvironmentVariable("OLLAMA_BASE_URL");
-
+    
+    public static string CreateDefaultSystemMessageNo(string resultString) => $"""
+                                                   Du er en norsk AI-assistent som hjelper med å svare på spørsmål 
+                                                   ved hjelp av gitt informasjon. Basert på følgende kontekst informasjon,
+                                                   {resultString}
+                                                   Svar på spørsmålet basert på informasjonen ovenfor. Legg til dokumentnavnet som kilde 
+                                                   for informasjonen du gir, legg den til på slutten av hver setning. 
+                                                   Et eksempel på kilde kan være "Kilde: [navn-på-kilde].
+                                                   Hvis varet ikke finnes i konteksten, si "Beklager, jeg har ikke informasjon om dette." 
+                                                   Hvis det ikke er informasjon. Ikke legg med kilde i dette tilfellet.
+                                                   """;
+    
     /// <summary>
     /// Allows you to send a message to Ollama, and get a response back in text format.
     /// </summary>
@@ -44,7 +55,7 @@ public class Ollama
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     /// 
-    public async Task<T> OllamaJsonResponse<T>(string model, string userMessage, string systemMessage)
+    public async Task<T> OllamaJsonResponse<T>(string userMessage, string systemMessage, string model = "gemma3:27b")
         where T : class, new()
     {
         var chatClient = new OllamaChatClient(new Uri(_ollamaBaseUrl ?? "http://localhost:11434/"), model);
