@@ -26,8 +26,13 @@ internal class SlashCommandHandler : ISlashCommandHandler
                     }
                 };
             default:
-                return null;
-        }
+                return new SlashCommandResponse
+                {
+                    Message = new Message
+                    {
+                        Text = "Unsupported command. Please use a valid slash command."
+                    }
+                };
     }
 
     public async Task<string> HandleAskCommand(string queryText)
