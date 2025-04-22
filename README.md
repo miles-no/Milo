@@ -10,8 +10,8 @@ This project demonstrates a complete RAG pipeline in .NET, integrated with Slack
 - Storing documents and their embeddings securely
 - Retrieving relevant document chunks based on semantic search
 - Using retrieved context to enhance LLM queries with Ollama
-- 💬 Chatting with Milo directly in Slack by mentioning `@milo`
-- 🔒 Privacy-focused: all processing happens locally or within your controlled environment
+- Chatting with Milo directly in Slack by mentioning `@milo`
+- Privacy-focused: all processing happens locally or within your controlled environment
 
 ## System Requirements
 
