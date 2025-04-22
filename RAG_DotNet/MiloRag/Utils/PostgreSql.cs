@@ -6,7 +6,7 @@ public static class PostgreSql
 {
     private static readonly string _connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING") ?? string.Empty;
     
-    public static List<DocumentSearchResult> VectorySimiliarySearch(float[] embeddings, int limit = 5)
+    public static List<DocumentSearchResult> VectorSimilaritySearch(float[] embeddings, int limit = 5)
     {
         var results = new List<DocumentSearchResult>();
         try
