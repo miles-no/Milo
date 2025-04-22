@@ -21,10 +21,8 @@ serviceCollection.AddSingleton(settings);
 serviceCollection.AddSlackNet(c => c
     .UseApiToken(settings.ApiToken) // This gets used by the API client
     .UseAppLevelToken(settings.AppLevelToken) // This gets used by the socket mode client
-
     .RegisterEventHandler<MessageEvent, MiloMentionHandler>()
-
-    .RegisterSlashCommandHandler<SlashCommandHandler>(SlashCommandHandler.SlashCommand)
+    .RegisterSlashCommandHandler<SlashCommandHandler>(SlashCommandHandler.AskCommand)
 
 );
 var services = serviceCollection.BuildServiceProvider();

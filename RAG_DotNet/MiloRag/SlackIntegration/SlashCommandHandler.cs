@@ -10,11 +10,11 @@ namespace SlackIntegration;
 /// </summary>
 internal class SlashCommandHandler : ISlashCommandHandler
 {
-    public const string SlashCommand = "/ask";
+    public const string AskCommand = "/ask";
 
     public async Task<SlashCommandResponse> Handle(SlashCommand command)
     {
-
+        
         switch (command.Command)
         {
             case "/ask":
@@ -26,13 +26,16 @@ internal class SlashCommandHandler : ISlashCommandHandler
                     }
                 };
             default:
+                // Slack only allows predefined slash commands to be run.
+                // If the default is reached, it means there is a sync error between the code and slack configuration.
                 return new SlashCommandResponse
                 {
                     Message = new Message
                     {
-                        Text = "Unsupported command. Please use a valid slash command."
+                        Text = $"The command {command.Command} is invalid. Please check configuration and try again."
                     }
                 };
+        }
     }
 
     public async Task<string> HandleAskCommand(string queryText)
