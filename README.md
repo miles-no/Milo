@@ -38,19 +38,19 @@ Set up the following environment variables. These are typically loaded using `Mi
 
 ```bash
 # PostgreSQL connection string (Required by DBSetup, Embeddings, QueryOllama, SlackIntegration)
-export POSTGRES_CONNECTION_STRING="Host=localhost;Username=your_username;Password=your_password;Database=your_database"
+POSTGRES_CONNECTION_STRING="Host=localhost;Username=your_username;Password=your_password;Database=your_database"
 
 # Ollama settings (Used by Embeddings, QueryOllama, SlackIntegration)
 # Defaults: Endpoint=http://localhost:11434, Model=gemma3, EmbeddingModel=jeffh/intfloat-multilingual-e5-large-instruct:f16
-export OLLAMA_ENDPOINT="http://localhost:11434"
-export OLLAMA_MODEL="gemma3"
-export OLLAMA_EMBEDDING_MODEL="jeffh/intfloat-multilingual-e5-large-instruct:f16"
+OLLAMA_ENDPOINT="http://localhost:11434"
+OLLAMA_MODEL="gemma3"
+OLLAMA_EMBEDDING_MODEL="jeffh/intfloat-multilingual-e5-large-instruct:f16"
 
 # Slack settings (Required by SlackIntegration)
-export SLACK_BOT_TOKEN="xoxb-your-bot-token"
-export SLACK_APP_TOKEN="xapp-your-app-level-token"
+SLACK_BOT_TOKEN="xoxb-your-bot-token"
+SLACK_APP_TOKEN="xapp-your-app-level-token"
 ```
-*(Ensure your shell applies these exports, or configure them via launch settings, system environment variables, etc.)*
+
 
 ### 2. Database Setup
 
@@ -140,19 +140,20 @@ CREATE INDEX idx_embeddings ON embeddings USING ivfflat (embedding vector_cosine
 
 ### 2. Document Processing and Chunking
 
-The `Embeddings` project implements a basic chunking strategy:
+The `Embeddings` project uses an LLM-based approach for chunking:
 
-- **Reading**: Reads text content from files.
-- **Splitting**: Divides the text into smaller, potentially overlapping chunks. (The specific strategy, e.g., fixed size, sentence splitting, might need inspection in `Embeddings/Program.cs` or related classes).
-- **Metadata**: Each chunk is associated with its original source document (`source` column in `documents` table).
-- **Goal**: Chunks should be small enough for effective embedding but large enough to contain meaningful context.
+- **Reading**: Reads text content from files in the specified directory (`HandbookDocuments`).
+- **LLM-based Splitting**: Instead of a simple rule-based splitter, it sends the entire document content to the configured Ollama generation model (e.g., `gemma3`) via the `Embeddings/Chunking/LLMChunking.cs` class.
+- **Prompting for Chunks**: A specific system prompt instructs the LLM to act as an assistant that divides documents into meaningful segments suitable for embedding. The prompt encourages grouping related content, favoring larger chunks over smaller ones, and maintaining the original language. The LLM is expected to return the chunks in a structured JSON format (defined by `Utils/Models/ChunkedData.cs`).
+- **Metadata**: Each resulting chunk is associated with its original source document (`source` column in `documents` table) when stored.
+- **Goal**: Leverage the LLM's understanding to create semantically coherent chunks, potentially leading to better context retrieval compared to simple fixed-size or sentence splitting.
 
 ### 3. Embedding Generation with Ollama
 
 Vector embeddings are generated via the Ollama API:
 
 - **Model**: Uses the model specified by `OLLAMA_EMBEDDING_MODEL` (e.g., `jeffh/intfloat-multilingual-e5-large-instruct:f16`).
-- **Client**: Likely uses `HttpClient` and `System.Net.Http.Json` (or `Microsoft.Extensions.AI.Ollama`) to interact with the Ollama `/api/embeddings` endpoint.
+- **Client**: Sses `Microsoft.Extensions.AI.Ollama` to interact with the Ollama `/api/embeddings` endpoint.
 - **Process**: Text chunks are sent to Ollama, which returns corresponding vector embeddings. These vectors are then stored in the `embeddings` table.
 
 ### 4. Semantic Search Implementation
@@ -165,21 +166,31 @@ The `QueryOllama` project (and `SlackIntegration`) performs semantic search:
 
 Example `Npgsql` query structure:
 ```csharp
-// Assuming 'connection' is an NpgsqlConnection and 'queryEmbedding' is float[]
-await using var cmd = new NpgsqlCommand(@"
-    SELECT d.content, d.source, 1 - (e.embedding <=> @queryEmbedding) as similarity 
-    FROM embeddings e 
-    JOIN documents d ON e.document_id = d.id 
-    ORDER BY e.embedding <=> @queryEmbedding 
-    LIMIT @topK", connection);
+using var conn = new NpgsqlConnection(_connectionString);
+conn.Open();
 
-cmd.Parameters.AddWithValue("queryEmbedding", queryEmbedding); 
-cmd.Parameters.AddWithValue("topK", 5); // Example: Retrieve top 5 chunks
+using var command = new NpgsqlCommand();
+command.Connection = conn;
+command.CommandText =
+    "SELECT d.id, d.content, d.source, 1 - (e.embedding <=> @embedding::vector) as similarity " +
+    "FROM embeddings e " +
+    "JOIN documents d ON e.document_id = d.id " +
+    "ORDER BY similarity DESC " +
+    "LIMIT @limit";
 
-await using var reader = await cmd.ExecuteReaderAsync();
-while (await reader.ReadAsync())
+command.Parameters.AddWithValue("@embedding", embeddings);
+command.Parameters.AddWithValue("@limit", limit);
+using var reader = command.ExecuteReader();
+
+while (reader.Read())
 {
-    // Process retrieved content, source, and similarity score
+    results.Add(new DocumentSearchResult
+    {
+        Id = reader.GetInt32(0),
+        Content = reader.GetString(1),
+        Source = reader.GetString(2),
+        Similarity = reader.GetDouble(3)
+    });
 }
 ```
 
@@ -191,7 +202,7 @@ The retrieved document chunks provide context for the final query to the LLM:
     - System instructions (e.g., "Answer the user's question based *only* on the provided context. Cite sources if possible.")
     - The retrieved context chunks (formatted clearly).
     - The original user question.
-- **LLM Interaction**: The combined prompt is sent to the Ollama generation model (`OLLAMA_MODEL`, e.g., `gemma3`) via its `/api/generate` or `/api/chat` endpoint.
+- **LLM Interaction**: The combined prompt is sent to the Ollama generation model.
 - **Response Generation**: The LLM generates an answer based on the user's question and the provided context.
 
 ### 6. Slack Integration
@@ -199,12 +210,12 @@ The retrieved document chunks provide context for the final query to the LLM:
 The `SlackIntegration` project bridges the RAG pipeline with Slack:
 
 - **Framework**: Uses `SlackNet` for handling Slack API interactions (Events API, Web API) via Socket Mode or HTTP.
-- **Event Handling**: Listens for `app_mention` events.
+- **Event Handling**: Listens for `app mention` or `slash command` events.
 - **Workflow**:
-    1. Receives mention event.
+    1. Receives event.
     2. Extracts the user's text query from the event payload.
     3. Invokes the RAG logic (embedding, search, context prompt, LLM query).
-    4. Posts the final LLM response back to the originating Slack channel/thread using `SlackNet`'s `api.Chat.PostMessage`.
+    4. Replies with the final LLM response back to the user.
 - **Configuration**: Loads `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` from environment variables or other configuration sources.
 
 ## Key Technologies & Libraries
@@ -214,10 +225,6 @@ The `SlackIntegration` project bridges the RAG pipeline with Slack:
 - **pgvector**: PostgreSQL extension for vector similarity search.
 - **Ollama**: Local inference server for running LLMs and embedding models.
 - **Npgsql**: .NET data provider for PostgreSQL.
-- **Microsoft.Extensions.AI**: Libraries potentially used for interacting with AI models (though direct `HttpClient` usage is also common).
-- **Microsoft.Extensions.Configuration**: For managing settings (connection strings, API keys, model names).
-- **Microsoft.Extensions.Hosting**: (Likely used in `SlackIntegration`) For running background services/bots.
-- **System.Text.Json**: For JSON serialization/deserialization when interacting with Ollama API.
 - **SlackNet**: .NET library for Slack API interaction.
 
 ## Available Ollama Models
@@ -234,7 +241,8 @@ Some recommended models:
 
 - `gemma3` (Default LLM model)
 - `jeffh/intfloat-multilingual-e5-large-instruct:f16` (Default Embedding Model)
-- `llama4`
+- `llama`
+- `mistral`
 
 Ensure the models you want to use are specified in your environment variables or the application configuration.
 
@@ -261,8 +269,3 @@ Milo processes all queries and document embeddings locally using Ollama and your
 ## Contributing
 
 Issues and pull requests are welcome! Feel free to contribute to make Milo even better.
-
-## License
-
-*(Consider adding a license file (e.g., LICENSE.txt with MIT, Apache 2.0) and referencing it here)*
-This project is licensed under the [Your License Name] License - see the LICENSE.txt file for details.
