@@ -9,12 +9,12 @@ namespace SlackIntegration;
 /// <summary>
 /// A message handler that responds to messages mentioning Milo.
 /// </summary>
-internal abstract class MiloMentionHandler(ISlackApiClient slack) : IEventHandler<MessageEvent>
+internal class MiloMentionHandler(ISlackApiClient slack) : IEventHandler<MessageEvent>
 {
     private const string MiloUserId = "<@U08GZTK3W5S>";
 
     public async Task Handle(MessageEvent slackEvent)
-    {   
+    {
         // Ignore messages from the bot itself
         if (slackEvent.User == MiloUserId )
         {
