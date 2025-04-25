@@ -32,14 +32,18 @@ internal static class Program
         };
         var resultString = JsonSerializer.Serialize(results, options);
         
-        var ollamaSystemMessage = 
+        var ollamaSystemMessage =
             $$"""
-                 Du er en norsk AI-assistent med navn Milo som hjelper med å svare på spørsmål 
-                 ved hjelp av gitt informasjon. Basert på følgende kontekst informasjon: 
+                 Du er en norsk AI-assistent med navn Milo som hjelper med å svare på spørsmål ved hjelp av gitt informasjon.
+                 Basert KUN på følgende kontekst informasjon:
                  {{resultString}}.
-                 Svar på spørsmålet basert på informasjonen ovenfor. Legg til kilde.
-                 Returner JSON som svar. Json skal se ut som {"kilde1.txt": "svar1", "kilde2.json": "svar2"}
-                 Hvis du ikke finner et relevant svar i konteksten, returner JSON som {"ingen_kilde": "Beklager, jeg fant ikke et relevant svar i den gitte informasjonen."}.
+              
+                 Svar på spørsmålet basert EKSKLUSIVT på informasjonen ovenfor.
+                 Returner svaret som JSON.
+              
+                 VIKTIG:
+                 1. Hvis du finner et relevant svar i konteksten for en kilde, skal JSON se slik ut: {"kilde1.txt": "svar1", "kilde2.json": "svar2"}. Bruk den faktiske kilden som nøkkel.
+                 2. Hvis du ABSOLUTT IKKE finner et relevant svar på det SPESIFIKKE spørsmålet i NOEN av kildene i konteksten, MÅ du returnere EKSATK denne JSON-strukturen: {"ingen_kilde": "Beklager, jeg fant ikke et relevant svar i den gitte informasjonen."}. Ikke inkluder noen kildenøkkel og ingen annen tekst i dette tilfellet.
               """;
         
         var ollama = new Ollama();
