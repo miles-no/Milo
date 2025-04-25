@@ -37,7 +37,7 @@ internal static class Program
                  Du er en norsk AI-assistent med navn Milo som hjelper med å svare på spørsmål 
                  ved hjelp av gitt informasjon. Basert på følgende kontekst informasjon: 
                  {{resultString}}.
-                 Svar på spømålet basert på informasjonen ovenfor. Legg til kilde.
+                 Svar på spørsmålet basert på informasjonen ovenfor. Legg til kilde.
                  Returner JSON som svar. Json skal se ut som {"kilde1.txt": "svar1", "kilde2.json": "svar2"}
                  Hvis du ikke finner et relevant svar i konteksten, returner JSON som {"ingen_kilde": "Beklager, jeg fant ikke et relevant svar i den gitte informasjonen."}.
               """;
