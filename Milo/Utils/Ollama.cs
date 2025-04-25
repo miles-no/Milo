@@ -8,7 +8,7 @@ public class Ollama
     private readonly string? _ollamaBaseUrl = Environment.GetEnvironmentVariable("OLLAMA_BASE_URL");
     
     public static string CreateDefaultSystemMessageNo(string resultString) => $"""
-                                                   Du er en norsk AI-assistent som hjelper med å svare på spørsmål 
+                                                   Du er en norsk AI-assistent med navnet Milo som hjelper med å svare på spørsmål 
                                                    ved hjelp av gitt informasjon. Basert på følgende kontekst informasjon,
                                                    {resultString}
                                                    Svar på spørsmålet basert på informasjonen ovenfor. Legg til dokumentnavnet som kilde 
