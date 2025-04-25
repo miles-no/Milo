@@ -6,7 +6,7 @@ public static class PostgreSql
 {
     private static readonly string _connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING") ?? string.Empty;
     
-    public static List<DocumentSearchResult> VectorSimilaritySearch(float[] embeddings, int limit = 5)
+    public static List<DocumentSearchResult> VectorSimilaritySearch(float[] embeddings, int limit = 5, double tolerance = 0.86)
     {
         var results = new List<DocumentSearchResult>();
         try
@@ -20,11 +20,13 @@ public static class PostgreSql
                 "SELECT d.id, d.content, d.source, 1 - (e.embedding <=> @embedding::vector) as similarity " +
                 "FROM embeddings e " +
                 "JOIN documents d ON e.document_id = d.id " +
+                "WHERE 1 - (e.embedding <=> @embedding::vector) >= @tolerance " + // Filter in SQL
                 "ORDER BY similarity DESC " +
                 "LIMIT @limit";
 
             command.Parameters.AddWithValue("@embedding", embeddings);
             command.Parameters.AddWithValue("@limit", limit);
+            command.Parameters.AddWithValue("@tolerance", tolerance);
             using var reader = command.ExecuteReader();
             
             while (reader.Read())
